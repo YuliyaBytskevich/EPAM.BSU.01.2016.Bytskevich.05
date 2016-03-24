@@ -19,23 +19,31 @@ namespace WorkingWithBooksCollection
 
         public void AddBook(string name, string author, string yearOfEdition, string genre)
         {
+            foreach (Book book in collection)
+            {
+                if (book.Name == name && book.Author == author && book.YearOfEdition == yearOfEdition && book.Genre == genre)
+                    throw new DuplicateBookException("Book with such parameters already exists in this collection and can't be added one more time");
+            }
             Book newBook = new Book(name, author, yearOfEdition, genre);
-            if (collection.Contains(newBook))
-                throw new DuplicateBookException("Book with such parameters already exists in this collection and can't be added one more time");
             collection.Add(newBook);
         }
 
         public void RemoveBook(Book toBeRemoved)
         {
             if (!collection.Contains(toBeRemoved))
-                throw new NotExistingBookException("Book with such parameters doesn't exist in collection and can't be removed");
+                throw new NotExistingBookException("Book with such parameters doesn't exist in this collection and can't be removed");
             collection.Remove(toBeRemoved);
         }
 
         public void RemoveBook(string name, string author, string yearOfEdition, string genre)
         {
-            Book toBeRemoved = new Book(name, author, yearOfEdition, genre);
-            if (!collection.Contains(toBeRemoved))
+            Book toBeRemoved = null;
+            foreach (Book book in collection)
+            {
+                if (book.Name == name && book.Author == author && book.YearOfEdition == yearOfEdition && book.Genre == genre)
+                    toBeRemoved = book;
+            }
+            if (toBeRemoved == null)
                 throw new NotExistingBookException("Book with such parameters doesn't exist in collection and can't be removed");
             collection.Remove(toBeRemoved);
         }
