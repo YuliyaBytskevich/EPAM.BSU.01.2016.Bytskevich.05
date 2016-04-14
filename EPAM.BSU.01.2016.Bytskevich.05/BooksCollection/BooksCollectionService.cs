@@ -1,16 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WorkingWithBooksCollection
 {
-    public class BooksCollection
+    public class BooksCollectionService
     {
-        List<Book> collection = new List<Book>();
+        private List<Book> collection;
 
-        public void AddBook(Book newBook)
+        public BooksCollectionService()
+        {
+            collection = new List<Book>();
+        }
+
+        public BooksCollectionService(IEnumerable<Book> collection)
+        {
+            this.collection = new List<Book>();
+            foreach (var book in collection)
+            {
+                this.collection.Add(book);
+            }
+        }
+
+        public void AddBook(Book newBook) 
         {
             if (collection.Contains(newBook))
                 throw new DuplicateBookException("Book with such parameters already exists in this collection and can't be added one more time");
@@ -21,7 +36,7 @@ namespace WorkingWithBooksCollection
         {
             foreach (Book book in collection)
             {
-                if (book.Name == name && book.Author == author && book.YearOfEdition == yearOfEdition && book.Genre == genre)
+                if (book.Name == name && book.Author == author && book.YearOfEdition == yearOfEdition  && book.Genre == genre)
                     throw new DuplicateBookException("Book with such parameters already exists in this collection and can't be added one more time");
             }
             Book newBook = new Book(name, author, yearOfEdition, genre);
@@ -76,10 +91,7 @@ namespace WorkingWithBooksCollection
                 case "g": case "genre":
                     collection.Sort((first, second) => first.Genre.CompareTo(second.Genre));
                     break;
-            }
-
-                
-            
+            }                        
         }
 
         public override string ToString()
@@ -99,7 +111,12 @@ namespace WorkingWithBooksCollection
 
         public void SaveCollection()
         {
-            BooksStorageAccessor.SaveCollection(collection);
+            BooksStorageAccessor.SaveCollection(GetCollectionCopy());
+        }
+
+        internal IEnumerable<Book> GetCollectionCopy()
+        {
+            return collection.Select(book => book.Clone()).ToList();
         }
     }
 
